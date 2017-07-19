@@ -109,6 +109,10 @@ module Spree
       next_order
     end
 
+    def last_order_currency
+      orders.complete.last.currency
+    end
+
     def create_next_order!
       # just keeping safe
       non_existing_attributes = Spree::SubscriptionAddress.dup.attribute_names - Spree::Address.attribute_names

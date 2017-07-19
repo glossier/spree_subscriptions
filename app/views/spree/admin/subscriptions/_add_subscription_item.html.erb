@@ -6,7 +6,7 @@
       <%= label_tag :add_subscription_item_variant_id, Spree.t(:name_or_sku) %>
       <%= hidden_field_tag :add_subscription_item_variant_id, "", :class => "variant_autocomplete fullwidth" %>
     </div>
-    <input class="store_currency" type="hidden" value="<%= @subscription.orders.completed.last.currency %>">
+    <input class="store_currency" type="hidden" value="<%= @subscription.last_order_currency %>">
 
   </fieldset>
 
