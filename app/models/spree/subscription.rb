@@ -115,7 +115,6 @@ module Spree
     def create_next_order!
       # just keeping safe
       non_existing_attributes = Spree::SubscriptionAddress.dup.attribute_names - Spree::Address.attribute_names
-
       # use subscription's addresses for the new order and email
       created_order = orders.create!(
         user: last_completed_order.user,
@@ -126,6 +125,9 @@ module Spree
         store: last_completed_order.store,
         currency: last_completed_order.currency
       )
+      # use the subscription's email if present.
+      # we are doing it here because the order's callback associate_user! will
+      # override the order's email even if we set it during creation
       created_order.update_column(:email, email) if email
       created_order
     end
