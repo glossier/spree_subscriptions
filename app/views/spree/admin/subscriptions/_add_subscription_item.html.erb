@@ -4,8 +4,9 @@
 
     <div data-hook="add_product_name" class="field twelve columns alpha">
       <%= label_tag :add_subscription_item_variant_id, Spree.t(:name_or_sku) %>
-      <%= text_field_tag :add_subscription_item_variant_id, "", :class => "variant_autocomplete fullwidth" %>
+      <%= hidden_field_tag :add_subscription_item_variant_id, "", :class => "variant_autocomplete fullwidth" %>
     </div>
+    <input class="store_currency" type="hidden" value="<%= @subscription.orders.completed.last.currency %>">
 
   </fieldset>
 
