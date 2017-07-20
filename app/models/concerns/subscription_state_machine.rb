@@ -14,7 +14,10 @@ module SubscriptionStateMachine
       after_transition any => :renewing, do: :mark_last_renewal!
       after_transition renewing: :active, do: :adjust_next_renewal!
 
-      event(:cancel) { transition active: :cancelled }
+      
+      event :cancel do
+        transition all => :cancelled
+      end
       event(:pause) { transition active: :paused }
       event(:resume) { transition paused: :active }
 

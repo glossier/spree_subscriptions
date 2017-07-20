@@ -19,7 +19,7 @@ class GenerateSubscriptionOrder
   end
 
   def create_next_order_with_payment
-    previous_order = subscription.last_order
+    previous_order = subscription.last_completed_order
 
     # create a new order and populate the next order with the same line items
     subscription.subscription_items.each do |line_item|

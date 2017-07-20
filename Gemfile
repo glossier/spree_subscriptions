@@ -1,5 +1,6 @@
 source 'http://rubygems.org'
 
+gem 'rake', '< 11.0'
 gem 'solidus', github: 'solidusio/solidus', branch: 'v1.4'
 # Provides basic authentication functionality for testing parts of your engine
 gem 'solidus_auth_devise', github: 'solidusio/solidus_auth_devise', branch: 'master'
@@ -19,6 +20,8 @@ group :test do
   gem 'selenium-webdriver'
   gem 'poltergeist'
   gem 'capybara-screenshot'
+  gem 'vcr'
+  gem 'webmock'
 end
 
 group :development do

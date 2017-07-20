@@ -5,7 +5,7 @@ class AddRenewalDatesToSubscriptions < ActiveRecord::Migration
 
     Spree::Subscription.active.each do |subscription|
       subscription.update_column(:last_renewal_at,
-        subscription.last_order.completed_at)
+        subscription.last_completed_order.completed_at)
       subscription.touch
     end
   end

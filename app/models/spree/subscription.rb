@@ -51,8 +51,7 @@ module Spree
 
       def ready_for_next_order
         subscriptions = active.with_interval.good_standing.select do |subscription|
-          last_order = subscription.last_order
-          next unless last_order
+          next unless subscription.last_completed_order
           next if subscription.prepaid?
           subscription.next_shipment_date.to_date <= Date.today
         end
@@ -70,7 +69,7 @@ module Spree
     end
 
     def last_shipment_date
-      last_order.completed_at if last_order
+      last_completed_order.completed_at if last_completed_order
     end
 
     def next_shipment_date
@@ -86,15 +85,19 @@ module Spree
     end
 
     def last_order
-      orders.complete.reorder("completed_at desc").first
+      orders.reorder('created_at desc').first
+    end
+
+    def last_completed_order
+      completed_orders.reorder('completed_at desc').first
     end
 
     def last_order_credit_card
-      last_order.payments.where('amount > 0').where(state: 'completed').last.source
+      last_completed_order.payments.where('amount > 0').where(state: 'completed').last.source
     end
 
     def last_order_date
-      orders.first.complete? ? orders.first.completed_at : orders.first.created_at
+      last_completed_order ? last_completed_order.completed_at : last_order.created_at
     end
 
     def next_order
@@ -119,7 +122,7 @@ module Spree
 
       # use subscription's addresses for the new order and email
       created_order = orders.create!(
-        user: last_order.user,
+        user: last_completed_order.user,
         repeat_order: true,
         bill_address: Spree::Address.new(bill_address.dup.attributes.except(*non_existing_attributes)),
         ship_address: Spree::Address.new(ship_address.dup.attributes.except(*non_existing_attributes)),
@@ -189,7 +192,7 @@ module Spree
 
     # fetch the last completed order shipment
     def shipment
-      last_order.shipments.last
+      last_completed_order.shipments.last
     end
 
     # fetch the last completed order shipping method

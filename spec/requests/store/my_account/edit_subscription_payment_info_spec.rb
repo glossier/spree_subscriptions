@@ -18,7 +18,7 @@ feature "Editing a subscription payment info", type: :request do
     expect(@credit_card.current_payment_info).to_not be_nil
   end
 
-  scenario "can update payment info" do
+  scenario "can update payment info", :vcr do
     @credit_card.number = "4242424242424242"
     @credit_card.name = "John Doe"
     @credit_card.expiry = "06/20"

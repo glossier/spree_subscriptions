@@ -28,7 +28,7 @@ class Spree::SubscriptionMailer < Spree::BaseMailer
     def set_default_variables(subject, campaign)
       @subject = subject
       @campaign = campaign
-      @order = @subscription.last_order
+      @order = @subscription.last_completed_order
       @to_address = @order.email
       @from_addess = from_address
     end

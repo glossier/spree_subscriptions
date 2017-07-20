@@ -104,8 +104,8 @@
         </td>
         <td>
           <% if subscription.orders.any? %>
-          <span class="state <%= subscription.orders.first.state.downcase %>">
-            <%= link_to subscription.orders.first.number, edit_admin_order_path(subscription.last_order), target: '_blank' %>
+          <span class="state <%= subscription.last_order.state.downcase %>">
+            <%= link_to subscription.last_order.number, edit_admin_order_path(subscription.last_order), target: '_blank' %>
           </span>
           <br />
           <%= l(subscription.last_order_date, format: :long)  %>
