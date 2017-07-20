@@ -3,7 +3,7 @@ module Spree
     include SubscriptionStateMachine
 
     has_many :subscription_items, dependent: :destroy, inverse_of: :subscription
-    has_and_belongs_to_many :orders, join_table: :spree_orders_subscriptions
+    has_and_belongs_to_many :orders, join_table: :spree_orders_subscriptions, after_add: :set_email
     belongs_to :user
     belongs_to :credit_card
     alias_attribute :items, :subscription_items
@@ -125,10 +125,6 @@ module Spree
         store: last_completed_order.store,
         currency: last_completed_order.currency
       )
-      # use the subscription's email if present.
-      # we are doing it here because the order's callback associate_user! will
-      # override the order's email even if we set it during creation
-      created_order.update_column(:email, email) if email
       created_order
     end
 
@@ -239,5 +235,9 @@ module Spree
         last_renewal_at.advance(calc_next_renewal_date))
     end
 
+    def set_email(new_order)
+      # use the subscription's email if present vs last order's
+      new_order.update_column(:email, email) if email
+    end
   end
 end
