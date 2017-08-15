@@ -198,6 +198,24 @@ describe Spree::Subscription do
     end
   end
 
+  context '#create_next_order!' do
+    let(:second_store) { create(:store) }
+
+    before do
+      create_completed_subscription_order
+
+      subscription.last_order.update_column(:currency, 'CAD')
+      subscription.last_order.update_column(:store_id, second_store.id)
+    end
+
+    it "has the last order's currency and store" do
+      subscription.create_next_order!
+
+      expect(subscription.last_order.currency).to eq 'CAD'
+      expect(subscription.last_order.store_id).to eq second_store.id
+    end
+  end
+
   describe "can_renew?" do
     let(:subscription) { FactoryGirl.create(:subscription) }
 

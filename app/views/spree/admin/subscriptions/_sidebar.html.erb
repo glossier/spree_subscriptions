@@ -50,6 +50,8 @@
     <% else %>
       <dd><%= link_to Spree.t(:create), credit_card_admin_subscription_path(@subscription) %></dd>
     <% end %>
+    <dt>Currency</dt>
+    <dd class="<%= @subscription.last_order.currency.downcase %>">
     <dt>Last updated</dt>
     <dd><%= l(@subscription.updated_at, format: :long) %></dd>
   </dt>

@@ -75,7 +75,8 @@
        <col style="width: 18%;">
        <col style="width: 15%;">
        <col style="width: 3%;">
-       <col style="width: 9%;">
+       <col style="width: 6%;">
+       <col style="width: 3%;">
        <col style="width: 9%;">
     </colgroup>
     <thead>
@@ -87,6 +88,7 @@
         <th>User</th>
         <th>Skip</th>
         <th>Renew Date</th>
+        <th>Cur</th>
         <th data-hook="admin_subscriptions_index_header_actions" class="actions"></th>
       </tr>
     </thead>
@@ -118,6 +120,7 @@
         </td>
         <td class="align-center"><%= subscription.skip_order_at ? 'Yes' : '' if subscription.can_renew? %></td>
         <td class="align-center"><%= l(subscription.next_shipment_date, format: :subscription_date_format) if subscription.can_renew? %></td>
+        <td class="align-center center-flags <%= subscription.last_order.currency.downcase %>"></td>
         <td class='actions align-center' data-hook="admin_subscriptions_index_row_actions">
           <%=
             link_to_with_icon 'edit', 'Edit', edit_admin_subscription_path(subscription), no_text: true
