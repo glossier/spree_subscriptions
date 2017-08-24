@@ -1,24 +1,40 @@
 <% content_for :page_title do %>
-  <%= t(:new_subscription) %>
+  <%= Spree.t('admin.subscription.new') %>
 <% end %>
 
+<% content_for :tabs do %>
+  <div class="sixteen columns">
+    <nav>
+      <ul class="subscription tabs">
+          <li><a href="#" data-target="tab-1">Subscription</a></li>
+          <li><a href="#" data-target="tab-2">Items</a></li>
+      </ul>
+    </nav>
+  </div>
+<% end %>
+
+<div class="js-content-below-tabs sixteen columns">
 <%= form_for @subscription, :url => admin_subscriptions_path(@subscription) do |f| %>
   <%= f.hidden_field :order_ids, value: params[:order_id] %>
 
   <%= f.hidden_field :state %>
   <%= f.hidden_field :user_id %>
-  <%= f.hidden_field :duration %>
+  <%#= f.hidden_field :duration %>
   <%= f.hidden_field :prepaid_amount %>
   <%= f.hidden_field :credit_card_id %>
 
-  <fieldset class="index no-border-bottom">
-    <legend align="center"><%= Spree.t("admin.subscription") %></legend>
+  <div class="subscription tab-container">
+
+  <div id="tab-1">
     <%= render :partial => 'form', :locals => { :f => f } %>
-  </fieldset>
+    <%= render partial: 'spree/admin/subscriptions/addresses', :locals => { :f => f } %>
+  </div>
 
-  <%= render partial: 'spree/admin/subscriptions/addresses', :locals => { :f => f } %>
+  <div id="tab-2">
+    <%= render partial: 'spree/admin/subscriptions/items' %>
+  </div>
 
-  <%= render partial: 'spree/admin/subscriptions/items' %>
+  </div>
 
   <div class="clear"></div>
   <fieldset class="index no-border-top">
@@ -28,3 +44,5 @@
   </fieldset>
 
 <% end %>
+
+</div>
