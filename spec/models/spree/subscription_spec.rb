@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Spree::Subscription do
   include OrderMacros
 
-  it { should have_and_belong_to_many(:orders) }
+  it { should have_many(:orders) }
   it { should belong_to(:user) }
   it { should belong_to(:credit_card)}
   it { should respond_to(:resume_on)}
