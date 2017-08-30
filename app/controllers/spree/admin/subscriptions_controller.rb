@@ -136,11 +136,12 @@ module Spree
         def build_subscription_from_order(order)
           attrs = {
             user_id: order.user.id,
+            email: order.email,
             state: 'active',
             interval: order.subscription_interval,
-            credit_card_id: order.credit_card_id_if_available
+            credit_card_id: order.credit_card_id_if_available,
           }
-          order.build_subscription(attrs)
+          order.subscriptions.build(attrs)
         end
 
         def build_subscription_items(subscription, order)

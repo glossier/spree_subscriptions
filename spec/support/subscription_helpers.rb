@@ -11,5 +11,5 @@ def next_calc_shipment_date
 end
 
 def original_shipment_date
-  (subscription.interval).weeks.from_now.to_date
+  (subscription.interval).months.from_now.to_date
 end

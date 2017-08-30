@@ -3,7 +3,6 @@ module Spree
     include SubscriptionStateMachine
 
     has_many :subscription_items, dependent: :destroy, inverse_of: :subscription
-    has_and_belongs_to_many :orders, join_table: :spree_orders_subscriptions, after_add: :set_email
     belongs_to :user
     belongs_to :credit_card
     alias_attribute :items, :subscription_items
@@ -16,6 +15,9 @@ module Spree
 
     has_many :subscription_skips, dependent: :destroy, inverse_of: :subscription
     alias_attribute :skips, :subscription_skips
+
+    has_many :order_subscriptions
+    has_many :orders, through: :order_subscriptions
 
     accepts_nested_attributes_for :ship_address
     accepts_nested_attributes_for :bill_address
@@ -77,7 +79,7 @@ module Spree
     end
 
     def calc_next_renewal_date
-      { weeks: interval }
+      { months: interval }
     end
 
     def active?
@@ -235,13 +237,10 @@ module Spree
     def adjust_next_renewal!
       return if renewing?
 
+      last_renewal_at = Date.today if last_renewal_at.nil?
+
       update_column(:next_renewal_at,
         last_renewal_at.advance(calc_next_renewal_date))
-    end
-
-    def set_email(new_order)
-      # use the subscription's email if present vs last order's
-      new_order.update_column(:email, email) if email
     end
   end
 end

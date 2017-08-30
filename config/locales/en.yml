@@ -41,6 +41,7 @@ en:
         failures: Failed Renewals
         adjust_sku: Adjust SKUs
       subscription:
+        new: New Subscription
         subscription: Subscription
         current_items: Current Items
         orders: Order

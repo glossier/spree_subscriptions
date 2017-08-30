@@ -17,9 +17,8 @@ module Spree
       line_item.interval == options[:interval]
     end
 
-
     def subscription_interval
-      subscription ? subscription.interval : 4
+      subscription ? subscription.interval : 1
     end
 
     def subscription_products
