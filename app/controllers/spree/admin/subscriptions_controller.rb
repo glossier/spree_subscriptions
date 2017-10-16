@@ -14,8 +14,9 @@ module Spree
 
           # build subscription addresses
           user = order.user
-          @subscription.build_ship_address(order.ship_address.dup.attributes.merge({user_id: user.id}))
-          @subscription.build_bill_address(order.bill_address.dup.attributes.merge({user_id: user.id}))
+          non_existing_attributes = Spree::Address.attribute_names - Spree::SubscriptionAddress.dup.attribute_names
+          @subscription.build_ship_address(order.ship_address.dup.attributes.except(*non_existing_attributes).merge({user_id: user.id}))
+          @subscription.build_bill_address(order.bill_address.dup.attributes.except(*non_existing_attributes).merge({user_id: user.id}))
 
           # build items
           build_subscription_items(@subscription, order)
