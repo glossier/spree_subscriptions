@@ -39,6 +39,7 @@ en:
       tab:
         subscriptions: Subscriptions
         failures: Failed Renewals
+        renewing: Renewing
         adjust_sku: Adjust SKUs
       subscription:
         new: New Subscription
@@ -47,6 +48,8 @@ en:
         orders: Order
         skips_history: Skips History
         cancellation: Cancellation
+        failures: Failed Renewals
+        renewing: Renewing
 
     subscription:
       cancellation: Cancellation

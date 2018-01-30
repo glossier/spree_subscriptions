@@ -94,6 +94,10 @@ module Spree
         @subscriptions = Spree::Subscription.active.where('failure_count > 0').order('created_at desc')
       end
 
+      def renewing
+        @subscriptions = collection.where(state: :renewing).order('created_at desc')
+      end
+
       def adjust_sku
         old_sku = params[:old_sku]
         new_sku = params[:new_sku]
