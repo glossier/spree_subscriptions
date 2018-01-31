@@ -91,11 +91,12 @@ module Spree
       end
 
       def failures
-        @subscriptions = Spree::Subscription.active.where('failure_count > 0').order('created_at desc')
-      end
-
-      def renewing
-        @subscriptions = collection.where(state: :renewing).order('created_at desc')
+        params[:q] = { 
+          combinator: 'or',
+          state_eq: 'renewing',
+          failure_count_gt: 0
+        }
+        @subscriptions = collection
       end
 
       def adjust_sku

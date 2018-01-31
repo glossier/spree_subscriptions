@@ -50,6 +50,7 @@ en:
         cancellation: Cancellation
         failures: Failed Renewals
         renewing: Renewing
+        no_subscriptions_found: No Subscriptions Found
 
     subscription:
       cancellation: Cancellation
