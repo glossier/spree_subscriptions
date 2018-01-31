@@ -7,6 +7,7 @@ gem 'solidus_auth_devise', github: 'solidusio/solidus_auth_devise', branch: 'mas
 gem 'active_model_serializers', '~> 0.8.3'
 gem 'stripe'
 gem 'slim-rails'
+gem 'deface'
 
 group :test do
   gem 'factory_girl', '4.5.0'
