@@ -10,7 +10,6 @@ Spree::Core::Engine.routes.draw do
         post :credit_card
       end
       collection do
-        get :renewing
         get :failures
         get :adjust_sku
         post :adjust_sku

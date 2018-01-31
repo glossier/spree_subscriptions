@@ -39,7 +39,6 @@ en:
       tab:
         subscriptions: Subscriptions
         failures: Failed Renewals
-        renewing: Renewing
         adjust_sku: Adjust SKUs
       subscription:
         new: New Subscription
