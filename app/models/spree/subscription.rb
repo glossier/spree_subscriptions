@@ -35,6 +35,10 @@ module Spree
         where(state: 'active')
       end
 
+      def renewing
+        where(state: 'renewing')
+      end
+
       def paused
         where(state: 'paused')
       end
