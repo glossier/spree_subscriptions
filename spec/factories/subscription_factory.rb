@@ -11,6 +11,10 @@ FactoryGirl.define do
       FactoryGirl.create(:subscription_address)
     }
 
+    orders {
+      [FactoryGirl.create(:completed_order_with_totals)]
+    }
+
     association(:user)
   end
 end
