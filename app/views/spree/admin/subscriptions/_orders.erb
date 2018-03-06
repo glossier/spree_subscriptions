@@ -29,7 +29,7 @@
     </thead>
 
     <tbody>
-      <% @subscription.orders.each do |order| %>
+      <% @subscription.orders.order('updated_at desc').each do |order| %>
 
       <tr data-hook="admin_orders_index_rows" class="state-<%= order.state.downcase %> <%= cycle('odd', 'even') %>">
         <td class="align-center"><%= l (order.created_at).to_date %></td>
@@ -53,7 +53,7 @@
       </tr>
       <% if @subscription.subscription_log_for(order) %>
       <tr>
-        <td colspan="8"><%= @subscription.subscription_log_for(order).reason %></td>
+        <td colspan="7"><%= @subscription.subscription_log_for(order).reason %></td>
       </tr>
       <% end %>
       <% end %>

@@ -92,9 +92,10 @@ module Spree
 
       def failures
         params[:q] = { 
-          combinator: 'or',
-          state_eq: 'renewing',
-          failure_count_gt: 0
+          combinator: 'and',
+          state_in: ['active', 'renewing'],
+          failure_count_gt: 0,
+          s: 'last_renewal_at desc'
         }
         @subscriptions = collection
       end
