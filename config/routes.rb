@@ -20,6 +20,7 @@ Spree::Core::Engine.routes.draw do
   namespace :api, defaults: { format: 'json' } do
     resources :subscriptions, except: [:create, :new, :destroy] do
       member do
+        put :renew
         put :skip_next_order
         put :undo_skip_next_order
         put :pause

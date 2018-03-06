@@ -1,0 +1,5 @@
+/* css for spree_subscription gem specific */
+
+.tab-container > div:not(:first-child) {
+  display: none;
+}

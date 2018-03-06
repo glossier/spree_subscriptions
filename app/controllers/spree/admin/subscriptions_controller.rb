@@ -14,8 +14,9 @@ module Spree
 
           # build subscription addresses
           user = order.user
-          @subscription.build_ship_address(order.ship_address.dup.attributes.merge({user_id: user.id}))
-          @subscription.build_bill_address(order.bill_address.dup.attributes.merge({user_id: user.id}))
+          non_existing_attributes = Spree::Address.attribute_names - Spree::SubscriptionAddress.dup.attribute_names
+          @subscription.build_ship_address(order.ship_address.dup.attributes.except(*non_existing_attributes).merge({user_id: user.id}))
+          @subscription.build_bill_address(order.bill_address.dup.attributes.except(*non_existing_attributes).merge({user_id: user.id}))
 
           # build items
           build_subscription_items(@subscription, order)
@@ -38,15 +39,9 @@ module Spree
       end
 
       def renew
-        before_failure_count = @object.failure_count
-        ::GenerateSubscriptionOrder.new(@object).call
+        SubscriptionRenewalJob.perform_later @subscription.id
+        flash[:success] = flash_message_for(@object, :being_renewed)
 
-        # check if the failure count has increase, that means we have an error
-        if  @object.failure_count > before_failure_count
-          flash[:error] = flash_message_for(@object, :error_renew)
-        else
-          flash[:success] = flash_message_for(@object, :successfully_renewed)
-        end
         respond_with(@object) do |format|
           format.html { redirect_to location_after_save }
         end
@@ -96,7 +91,13 @@ module Spree
       end
 
       def failures
-        @subscriptions = Spree::Subscription.active.where('failure_count > 0').order('created_at desc')
+        params[:q] = { 
+          combinator: 'and',
+          state_in: ['active', 'renewing'],
+          failure_count_gt: 0,
+          s: 'last_renewal_at desc'
+        }
+        @subscriptions = collection
       end
 
       def adjust_sku
@@ -142,11 +143,12 @@ module Spree
         def build_subscription_from_order(order)
           attrs = {
             user_id: order.user.id,
+            email: order.email,
             state: 'active',
             interval: order.subscription_interval,
-            credit_card_id: order.credit_card_id_if_available
+            credit_card_id: order.credit_card_id_if_available,
           }
-          order.build_subscription(attrs)
+          order.subscriptions.build(attrs)
         end
 
         def build_subscription_items(subscription, order)

@@ -2,13 +2,13 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'solidus_subscriptions'
-  s.version     = '1.3.3.beta'
+  s.version     = '2'
   s.summary     = 'A Solidus extension to manage subscribable products.'
   s.description = """
     This Solidus extension enables an e-commerce owner manage products that can be subscribed to,
     via recurring payments and shipments at set intervals.
   """
-  s.required_ruby_version = '>= 1.8.7'
+  s.required_ruby_version = '>= 2.3.0'
 
   s.author    = 'Bryan Mahoney'
   s.email     = 'bryan@godynamo.com'
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency "solidus", [">= 1.0.6", "< 2"]
+  s.add_dependency "solidus", [">= 1.4", "< 2"]
 
   s.add_development_dependency 'capybara', '~> 2.4'
   s.add_development_dependency 'coffee-rails'

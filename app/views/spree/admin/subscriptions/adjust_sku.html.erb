@@ -27,8 +27,8 @@
         <td><%= subscription.id %>
         <td><%= subscription.email %>
         <td>
-          <span class="state <%= subscription.orders.first.state.downcase %>">
-            <%= link_to subscription.orders.first.number, edit_admin_order_path(subscription.last_order), target: '_blank' %>
+          <span class="state <%= subscription.last_completed_order.state.downcase %>">
+            <%= link_to subscription.last_completed_order.number, edit_admin_order_path(subscription.last_completed_order), target: '_blank' %>
           </span>
           <br />
           <%= l(subscription.last_order_date, format: :long)  %>

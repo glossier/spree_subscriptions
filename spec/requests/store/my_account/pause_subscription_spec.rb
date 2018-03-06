@@ -57,7 +57,7 @@ feature "Subscription", type: :request do
   end
 
   def pause_all_subscriptions_for(user)
-    user.subscriptions.each { |s| s.pause }
+    user.subscriptions.each { |s| s.pause! }
   end
 
 end

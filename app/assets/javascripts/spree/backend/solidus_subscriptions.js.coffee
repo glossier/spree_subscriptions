@@ -11,7 +11,6 @@ $(document).ready ->
     subscription_item_id = save.data('subscription-item-id')
     quantity = parseInt(save.parents('tr').find('input.subscription_item_quantity').val())
 
-    toggleItemEdit()
     adjustSubscriptionItem(subscription_item_id, quantity)
     false
 
@@ -21,7 +20,6 @@ $(document).ready ->
       del = $(this);
       subscription_item_id = del.data('subscription-item-id');
 
-      toggleItemEdit()
       deleteSubscriptionItem(subscription_item_id)
 
   # handle adding
@@ -30,16 +28,16 @@ $(document).ready ->
     variant = _.find(window.variants, (variant) ->
       variant.id == variant_id
     )
-
+    variantLineItemTemplate = HandlebarsTemplates["variants/line_items_autocomplete_stock"];
     $('#stock_details').html variantLineItemTemplate(variant: variant)
     $('#stock_details').show()
     $('button.add_variant').click addSubscriptionVariant
-    # Add some tips
-    $('.with-tip').powerTip
-      smartPlacement: true
-      fadeInTime: 50
-      fadeOutTime: 50
-      intentPollInterval: 300
+
+  # handle the tabs
+  $('.subscription.tabs li > a').click ->
+    targetTab = $(this).data('target')
+    $('.subscription.tab-container > div').hide()
+    $('div#' + targetTab).show()
 
 
 toggleSubscriptionItemEdit = ->
@@ -66,9 +64,11 @@ adjustSubscriptionItem = (subscription_item_id, quantity) ->
         quantity: quantity
       token: Spree.api_key
   ).done (msg) ->
-    show_flash 'success', 'Successfully updated the quantity.'
-    $('.subscription-item-qty-show').text(quantity)
-    $('a.edit-subscription-item').trigger 'click'
+    show_flash 'success', 'Successfully updated the item quantity.'
+    findSubscriptionItemRow(subscription_item_id)
+      .find('.subscription-item-qty-show').text(quantity)
+    findSubscriptionItemRow(subscription_item_id)
+      .find('a.edit-subscription-item').trigger 'click'
 
 deleteSubscriptionItem = (subscription_item_id) ->
   url = Spree.pathFor('api/subscriptions/' + subscription_id + '/subscription_items/' + subscription_item_id)
@@ -102,3 +102,6 @@ adjustSubscriptionItems = (subscription_id, variant_id, quantity) ->
         variant_id: variant_id
         quantity: quantity
       token: Spree.api_key).done (msg) ->
+
+findSubscriptionItemRow = (subscription_item_id) ->
+  $('tr#subscription-item-' + subscription_item_id)

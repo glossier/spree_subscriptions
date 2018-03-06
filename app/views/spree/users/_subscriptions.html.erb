@@ -1,6 +1,6 @@
 <div data-hook="account_my_subscriptions">
 
-  <h3><%= t(:my_subscriptions) %></h3>
+  <h3><%= Spree.t(:my_subscriptions) %></h3>
   <% if subscriptions.present? %>
     <table class="subscriptions-summary">
       <thead>
@@ -21,29 +21,29 @@
             <td><%= subscription.products.collect(&:name).to_sentence %></td>
             <td><%= subscription.last_shipment_date %></td>
             <td><%= subscription.next_shipment_date %></td>
-            <td><%= t(subscription.state, scope: 'subscription_state', default: t('subscription_state.active')).titleize %></td>
+            <td><%= Spree.t(subscription.state, scope: 'subscription_state', default: Spree.t('subscription_state.active')).titleize %></td>
             <td>
               <% if subscription.active? %>
-                <%= button_to t('action.pause'), pause_subscription_path(subscription), method: :put, class: "pause-subscription" %>
+                <%= button_to Spree.t('actions.pause'), pause_subscription_path(subscription), method: :put, class: "pause-subscription" %>
               <% else %>
                 <div class='resume-subscription-on' <%= 'style=display:none' if !subscription.resume_at.nil? %>>
                   <%= form_for subscription, url: resume_subscription_path(subscription), method: :put  do |f| %>
                     <%= f.label(:resume_at, t('resume_at')) %>
                     <%= f.date_field(:resume_at, value: subscription.resume_at ? subscription.resume_at.to_date : Date.today, min: Date.today) %>
-                    <%= f.submit(t('action.resume'), class: "resume-subscription") %>
+                    <%= f.submit(Spree.t('actions.resume'), class: "resume-subscription") %>
                   <% end %>
                 </div>
                 <% if !subscription.resume_at.nil? && !subscription.cancelled? %>
                   <div class='subscription-will-resume-on'>
                     Will be resumed on <%= subscription.resume_at.to_date %>
-                    <%= tag :input, { type: :button, value: t('action.change'), class: 'change-resume-subscription-on' } %>
+                    <%= tag :input, { type: :button, value: Spree.t('actions.change'), class: 'change-resume-subscription-on' } %>
                 </div>
                 <% end %>
               <% end %>
             </td>
             <td>
               <% if !subscription.cancelled? %>
-                <%= button_to t('action.cancel'), cancel_subscription_path(subscription), method: :put, class: "cancel-subscription" %>
+                <%= button_to Spree.t('actions.cancel'), cancel_subscription_path(subscription), method: :put, class: "cancel-subscription" %>
               <% end %>
             </td>
           </tr>

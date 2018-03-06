@@ -29,6 +29,9 @@
           <td class="subscription-item-image"><%= mini_image(item.variant) %></td>
           <td class="subscription-item-name">
             <%= item.variant.product.name %><br><%= "(" + variant_options(item.variant) + ")" unless item.variant.option_values.empty? %>
+            <% if item.variant.sku.present? %>
+              <strong><%= Spree::Variant.human_attribute_name(:sku) %>:</strong> <%= item.variant.sku %>
+            <% end %>
           </td>
           <td class="subscription-item-price align-center"><%= number_to_currency(item.variant.price) %></td>
           <td class="subscription-item-qty-show align-center">

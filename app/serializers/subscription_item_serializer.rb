@@ -12,8 +12,7 @@ class SubscriptionItemSerializer < ActiveModel::Serializer
     {
       id: variant.id,
       name: variant.product.name,
-      options_text: variant.options_text,
-      portrait_small_url: variant.images.first.attachment.url(:portrait_small)
+      options_text: variant.options_text
     }
   end
 end

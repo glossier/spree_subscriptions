@@ -2,18 +2,48 @@
   <%= Spree.t(:editing_subscription) %>
 <% end %>
 
-<%= render partial: 'spree/admin/subscriptions/sidebar' %>
-
-<%= form_for @subscription, :url => admin_subscription_path(@subscription) do |f| %>
-
-  <%= render :partial => 'form', :locals => { :f => f } %>
-
-  <%= render partial: 'spree/admin/subscriptions/addresses', :locals => { :f => f } %>
-
-  <%= render partial: 'spree/admin/subscriptions/items' %>
-
-  <%= render partial: 'spree/admin/subscriptions/orders' %>
-
-  <%= render partial: 'spree/admin/subscriptions/skips' %>
-
+<% content_for :tabs do %>
+  <div class="sixteen columns">
+    <nav>
+      <ul class="subscription tabs">
+          <li><a href="#" data-target="tab-1">Subscription</a></li>
+          <li><a href="#" data-target="tab-2">Items</a></li>
+          <li><a href="#" data-target="tab-3">Orders</a></li>
+          <li><a href="#" data-target="tab-4">Skips</a></li>
+          <li><a href="#" data-target="tab-5">Cancellation</a></li>
+      </ul>
+    </nav>
+  </div>
 <% end %>
+
+<div class="js-content-below-tabs twelve columns">
+  <%= form_for @subscription, :url => admin_subscription_path(@subscription) do |f| %>
+
+    <div class="subscription tab-container">
+      <div id="tab-1">
+        <%= render :partial => 'form', :locals => { :f => f } %>
+
+        <%= render partial: 'spree/admin/subscriptions/addresses', :locals => { :f => f } %>
+      </div>
+
+      <div id="tab-2">
+        <%= render partial: 'spree/admin/subscriptions/items' %>
+      </div>
+
+      <div id="tab-3">
+        <%= render partial: 'spree/admin/subscriptions/orders' %>
+      </div>
+
+      <div id="tab-4">
+        <%= render partial: 'spree/admin/subscriptions/skips' %>
+      </div>
+
+      <div id="tab-5">
+        <%= render partial: 'spree/admin/subscriptions/cancellation' %>
+      </div>
+    </div>
+
+  <% end %>
+</div>
+
+<%= render partial: 'spree/admin/subscriptions/sidebar' %>

@@ -1,7 +1,8 @@
 module Spree
   class Subscription < ActiveRecord::Base
+    include SubscriptionStateMachine
+
     has_many :subscription_items, dependent: :destroy, inverse_of: :subscription
-    has_and_belongs_to_many :orders, join_table: :spree_orders_subscriptions
     belongs_to :user
     belongs_to :credit_card
     alias_attribute :items, :subscription_items
@@ -15,6 +16,9 @@ module Spree
     has_many :subscription_skips, dependent: :destroy, inverse_of: :subscription
     alias_attribute :skips, :subscription_skips
 
+    has_many :order_subscriptions
+    has_many :orders, through: :order_subscriptions
+
     accepts_nested_attributes_for :ship_address
     accepts_nested_attributes_for :bill_address
 
@@ -23,10 +27,16 @@ module Spree
     validates_presence_of :user
 
     after_save :reset_failure_count, if: :credit_card_id_changed?
+    after_create :mark_last_renewal!
+    after_touch :adjust_next_renewal!
 
     class << self
       def active
         where(state: 'active')
+      end
+
+      def renewing
+        where(state: 'renewing')
       end
 
       def paused
@@ -47,8 +57,7 @@ module Spree
 
       def ready_for_next_order
         subscriptions = active.with_interval.good_standing.select do |subscription|
-          last_order = subscription.last_order
-          next unless last_order
+          next unless subscription.last_completed_order
           next if subscription.prepaid?
           subscription.next_shipment_date.to_date <= Date.today
         end
@@ -66,50 +75,35 @@ module Spree
     end
 
     def last_shipment_date
-      last_order.completed_at if last_order
+      last_completed_order.completed_at if last_completed_order
     end
 
     def next_shipment_date
-      if skip_order_at
-        skip_order_at.advance(calc_next_renewal_date)
-      elsif last_order
-        last_order.completed_at.advance(calc_next_renewal_date)
-      end
+      next_renewal_at
     end
 
     def calc_next_renewal_date
-      { weeks: interval }
+      { months: interval }
     end
 
     def active?
-      self.state == 'active'
+      %w(active renewing).include? state
     end
-
-    def cancelled?
-      state == 'cancelled'
-    end
-
-    def paused?
-      state == 'paused'
-    end
-
-    def cancel
-      update_attribute(:state, 'cancelled')
-      update_attribute(:cancelled_at, Time.now)
-    end
-
-    alias_method :cancel!, :cancel
 
     def last_order
-      orders.complete.reorder("completed_at desc").first
+      orders.reorder('created_at desc').first
+    end
+
+    def last_completed_order
+      completed_orders.reorder('completed_at desc').first
     end
 
     def last_order_credit_card
-      last_order.payments.where('amount > 0').where(state: 'completed').last.source
+      last_completed_order.payments.where('amount > 0').where(state: 'completed').last.source
     end
 
     def last_order_date
-      orders.first.complete? ? orders.first.completed_at : orders.first.created_at
+      last_completed_order ? last_completed_order.completed_at : last_order.created_at
     end
 
     def next_order
@@ -124,20 +118,23 @@ module Spree
       next_order
     end
 
+    def last_order_currency
+      orders.complete.last.currency
+    end
+
     def create_next_order!
       # just keeping safe
       non_existing_attributes = Spree::SubscriptionAddress.dup.attribute_names - Spree::Address.attribute_names
-
       # use subscription's addresses for the new order and email
       created_order = orders.create!(
-        user: last_order.user,
+        user: last_completed_order.user,
         repeat_order: true,
         bill_address: Spree::Address.new(bill_address.dup.attributes.except(*non_existing_attributes)),
         ship_address: Spree::Address.new(ship_address.dup.attributes.except(*non_existing_attributes)),
         channel: 'subscription',
-        store: Spree::Store.current
+        store: last_completed_order.store,
+        currency: last_completed_order.currency
       )
-      created_order.update_column(:email, email) if email
       created_order
     end
 
@@ -194,22 +191,13 @@ module Spree
 
     alias_attribute :can_skip?, :can_skip
 
-    def pause
-      update_attributes(pause_at: Time.now, resume_at: nil, state: 'paused')
-    end
-
-    def resume(resume_at_date = Time.now)
-      update_attributes(resume_at: resume_at_date)
-      update_attributes(pause_at: nil, state: 'active') if (resume_at_date.to_date <= Date.today)
-    end
-
     def completed_orders
       orders.complete
     end
 
     # fetch the last completed order shipment
     def shipment
-      last_order.shipments.last
+      last_completed_order.shipments.last
     end
 
     # fetch the last completed order shipping method
@@ -244,5 +232,19 @@ module Spree
       }))
     end
 
+    private
+
+    def mark_last_renewal!
+      touch(:last_renewal_at)
+    end
+
+    def adjust_next_renewal!
+      return if renewing?
+
+      last_renewal_at = Date.today if last_renewal_at.nil?
+
+      update_column(:next_renewal_at,
+        last_renewal_at.advance(calc_next_renewal_date))
+    end
   end
 end

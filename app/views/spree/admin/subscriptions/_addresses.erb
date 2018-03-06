@@ -23,11 +23,11 @@
 </div>
 
 <% unless @subscription.new_record? %>
-  <fieldset class="no-border-top">
+
     <div class="form-buttons filter-actions actions" data-hook="buttons">
       <%= button Spree.t('actions.update'), 'refresh' %>
       <span class="or"><%= Spree.t(:or) %></span>
       <%= button_link_to Spree.t('actions.back'), collection_url, :icon => 'arrow-left' %>
     </div>
-  </fieldset>
+
 <% end %>

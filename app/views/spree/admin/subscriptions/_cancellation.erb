@@ -1,0 +1,26 @@
+<% if @subscription.cancelled? %>
+  <div class="twelve columns" data-hook="subscription-cancellation">
+    <div class="alpha six columns">
+      <strong>
+        Reasons
+      </strong>
+      <ul>
+        <% @subscription.cancel_reasons.each do |reason| %>
+          <li><%= I18n.t(reason, scope: 'cancel_reasons') %>
+        <% end %>
+      </ul>
+    </div>
+    <div class="omega six columns">
+      <strong>
+        Feedback
+      </strong>
+      <p>
+        <%= @subscription.cancel_feedback %>
+      </p>
+    </div>
+  </div>
+<% else %>
+  <div class="alpha twelve columns no-objects-found">
+    <%= Spree.t(:empty) %>
+  </div>
+<% end %>

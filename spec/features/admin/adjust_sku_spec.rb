@@ -16,7 +16,7 @@ describe "Subscription Adjust Sku", type: :feature do
       expect(@subscription.subscription_items.first.variant.sku).to eq("GPM100-2")
       expect(page).to have_content(@subscription.id)
       expect(page).to have_content(@subscription.email)
-      expect(page).to have_content(@subscription.last_order.number)
+      expect(page).to have_content(@subscription.last_completed_order.number)
     end
   end
 

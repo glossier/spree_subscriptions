@@ -1,11 +1,13 @@
 source 'http://rubygems.org'
 
-gem 'solidus', github: 'solidusio/solidus', branch: 'master'
+gem 'rake', '< 11.0'
+gem 'solidus', github: 'solidusio/solidus', branch: 'v1.4'
 # Provides basic authentication functionality for testing parts of your engine
 gem 'solidus_auth_devise', github: 'solidusio/solidus_auth_devise', branch: 'master'
 gem 'active_model_serializers', '~> 0.8.3'
 gem 'stripe'
 gem 'slim-rails'
+gem 'deface'
 
 group :test do
   gem 'factory_girl', '4.5.0'
@@ -17,6 +19,10 @@ group :test do
   gem 'guard-rspec', require: false
   gem 'simplecov', require: false
   gem 'selenium-webdriver'
+  gem 'poltergeist'
+  gem 'capybara-screenshot'
+  gem 'vcr'
+  gem 'webmock'
 end
 
 group :development do

@@ -1,28 +1,52 @@
-<h2> Showing subscriptions that failed renewing</h2>
-<b> Total: <%= @subscriptions.count %>
-<br/>
-<br/>
+<% content_for :page_title do %>
+  <%= Spree.t(:'admin.subscription.failures') %>
+<% end %>
+
+<% unless @subscriptions.empty? %>
+<div class="pagination">
+  <%= page_entries_info @collection %>
+</div>
 <table id="listing_subscriptions" class="index responsive">
   <thead>
     <tr>
-      <th>id</th>
-      <th>date</th>
-      <th>order</th>
-      <th>email</th>
-      <th>renewal date</th>
-      <th>attempts</th>
+      <th>ID</th>
+      <th>Status</th>      
+      <th>Last Order</th>
+      <th>Order</th>
+      <th>Renew Date</th>
+      <th>Attempts</th>
     </tr>
   </thead>
   <tbody>
     <% @subscriptions.each do |subscription| %>
       <tr>
-        <td><%= link_to subscription.id, edit_admin_subscription_path(subscription), target: '_blank' %>
-        <td><%= l(subscription.last_order_date, format: :subscription_date_format) %>
-        <td><%= link_to subscription.orders.first.number, edit_admin_order_path(subscription.orders.first), target: '_blank' %>
-        <td><%=link_to subscription.user.email, edit_admin_user_path(subscription.user), target: '_blank' %>
-        <td><%= l(subscription.next_shipment_date, format: :subscription_date_format) %>
-        <td><%= subscription.failure_count %>
+        <td><%= link_to subscription.id, edit_admin_subscription_path(subscription), target: '_blank' %></td>
+        <td class="align-center">
+          <span class="state <%= subscription.active? ? 'success' : 'canceled' %>"><%= subscription.state %></span>
+        </td>      
+        <td>
+          <%= l(subscription.last_order_date, format: :subscription_date_format) %> 
+        </td>
+        <td>
+          <% if subscription.last_order %>
+            <%= link_to subscription.last_order.number, edit_admin_order_path(subscription.last_order), target: '_blank' %> 
+          <% end %>
+          &nbsp;&nbsp;&nbsp;
+          <%=link_to subscription.user.email, edit_admin_user_path(subscription.user), target: '_blank' %> 
+          <br/>
+          <% if subscription.active? %>
+            <%= subscription.subscription_log_for(subscription.last_order)&.reason %>
+          <% end %>                  
+        </td>
+        <td><%= l(subscription.next_shipment_date, format: :subscription_date_format) if subscription.can_renew? %> </td>
+        <td class="align-center"><%= subscription.failure_count %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
+<% else %>
+<div class="no-objects-found">
+  <%= Spree.t(:'admin.subscription.no_subscriptions_found') %>
+</div>
+<% end %>
+<%= paginate @subscriptions %>

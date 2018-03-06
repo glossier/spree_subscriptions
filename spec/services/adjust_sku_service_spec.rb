@@ -28,8 +28,8 @@ describe AdjustSkuService do
       AdjustSkuService.new.update_subscriptions("bdc1", "bdc2")
 
       expect(@subscription.subscription_items.count).to eq(2)
-      expect(@subscription.subscription_items[0].variant_id).to be(variant2.id)
-      expect(@subscription.subscription_items[1].variant_id).to be(@new_variant.id)
+      expect(@subscription.subscription_items[0].variant.sku).to eq(@new_variant.sku)
+      expect(@subscription.subscription_items[1].variant.sku).to eq(variant2.sku)
     end
 
     it "all affected subscriptions are updated" do
@@ -51,24 +51,4 @@ describe AdjustSkuService do
       expect(@subscription.subscription_items.first).to have_attributes(quantity: 5, interval: 2, variant_id: @new_variant.id)
     end
   end
-
-
-  it "gets all subscription items with a specific sku" do
-    user2 = FactoryGirl.create(:user)
-    subscription2 = user2.subscriptions.create!(ship_address_id: address.id, bill_address_id: address.id)
-    subscription2.subscription_items.create!(variant_id: @old_variant.id, quantity: 1, price: 10.00)
-
-    subscription_items = AdjustSkuService.new.subscription_items(@old_variant)
-
-    expect(subscription_items.count).to eq(2)
-  end
-
-  it "creates a subscription item with the updated variant sku" do
-    item = @subscription.subscription_items.first
-
-    AdjustSkuService.new.create_subscription_item(item, @new_variant)
-
-    expect(@subscription.subscription_items.last.variant.sku).to eq("bdc2")
-  end
-
 end

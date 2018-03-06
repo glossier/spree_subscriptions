@@ -79,7 +79,7 @@ describe Spree::Order do
     it "returns 4 weeks if it doesn't have previous subscriptions" do
       order = create(:order, subscriptions: [])
 
-      expect(order.subscription_interval).to eq(4)
+      expect(order.subscription_interval).to eq(1)
     end
   end
 

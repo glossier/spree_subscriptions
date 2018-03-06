@@ -13,3 +13,12 @@ end
 
 Spree.user_class = "Spree::User"
 Spree::PermittedAttributes.line_item_attributes << :interval
+
+Spree::Backend::Config.configure do |config|
+  config.menu_items << config.class::MenuItem.new(
+    [:subscriptions],
+    'clock-o',
+    partial: 'spree/admin/shared/subscriptions_sub_menu',
+    url: :admin_subscriptions_path
+  )
+end

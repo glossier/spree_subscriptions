@@ -5,7 +5,7 @@ module Spree
     belongs_to :tax_category, class_name: "Spree::TaxCategory"
 
     has_one :product, through: :variant
-    
+
     before_validation :copy_price
     before_validation :copy_tax_category
 
@@ -21,7 +21,6 @@ module Spree
       if variant
         self.price = variant.price if price.nil?
         self.cost_price = variant.cost_price if cost_price.nil?
-        self.currency = variant.currency if currency.nil?
       end
     end
 

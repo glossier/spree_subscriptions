@@ -2,11 +2,6 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  subscribable: 'subscribable'
-  subscription: "subscription"
-  subscriptions: "subscriptions"
-  my_subscriptions: "My subscriptions"
-  listing_subscriptions: Subscriptions
   products: "Products"
   last_shipped_on: "Last Shipment"
   next_shipment: "Next Shipment"
@@ -19,13 +14,15 @@ en:
     id: "ID"
     successfully_cancelled: successfully cancelled subscription
     successfully_renewed: successfully renewed subscription
+    being_renewed: subscription being renewed
     error_renew: failed to renew subscription
     order_number: Order Number
     requires_order_id: Requires order id
     subscription_created: subscription created
     successfully_skipped: subscription next order has been skipped
     successfully_undo_skip: subscription next order skip has been undone
-    subscription: Subscription
+    subscriptions: Subscriptions
+    my_subscriptions: "My subscriptions"
     frequency: Frequency
     editing_subscription: Editing Subscription
     addl_information: Addl Information
@@ -40,12 +37,28 @@ en:
       back: Back
     admin:
       tab:
-        subscriptions: "Subscriptions"
+        subscriptions: Subscriptions
+        failures: Failed Renewals
+        adjust_sku: Adjust SKUs
       subscription:
+        new: New Subscription
         subscription: Subscription
         current_items: Current Items
         orders: Order
         skips_history: Skips History
+        cancellation: Cancellation
+        failures: Failed Renewals
+        renewing: Renewing
+        no_subscriptions_found: No Subscriptions Found
+
+    subscription:
+      cancellation: Cancellation
+      cancel_reasons:
+        replenish_often: My products were replenished too often
+        replenish_seldom: My product were not replensihed often enough
+        no_longer_want: I no longer want to use the products
+        want_single_purchase: I want to make single purchases
+        not_say: I’d prefer not to say
 
   activerecord:
     attributes:

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Spree::Subscription do
   include OrderMacros
 
-  it { should have_and_belong_to_many(:orders) }
+  it { should have_many(:orders) }
   it { should belong_to(:user) }
   it { should belong_to(:credit_card)}
   it { should respond_to(:resume_on)}
@@ -36,7 +36,7 @@ describe Spree::Subscription do
     end
 
     it "should be able to calculate the date of the next shipment" do
-      @order.subscriptions.last.next_shipment_date.to_i.should == 4.weeks.from_now.to_i
+      next_shipment_date.should == original_shipment_date
     end
 
     after do
@@ -53,12 +53,12 @@ describe Spree::Subscription do
     end
 
     it "should calculate the correct next shipment date if user decides to skip" do
-      @order.subscriptions.last.next_shipment_date.to_i.should == 8.weeks.from_now.to_i
+      next_shipment_date.should == next_calc_shipment_date
     end
 
     it "should fall back to the original shipment date after undoing" do
       @order.subscriptions.last.undo_skip_next_order
-      @order.subscriptions.last.next_shipment_date.to_i.should == 4.weeks.from_now.to_i
+      next_shipment_date.should == original_shipment_date
     end
   end
 
@@ -110,7 +110,7 @@ describe Spree::Subscription do
     end
 
     context "when the subscription has not been cancelled" do
-      let(:subscription_state) { nil }
+      let(:subscription_state) { 'active' }
 
       it "returns false" do
         expect(subscription.cancelled?).to be false
@@ -119,14 +119,14 @@ describe Spree::Subscription do
   end
 
   describe "#cancel!" do
-    let(:subscription) { FactoryGirl.create(:subscription, state: nil) }
+    let(:subscription) { FactoryGirl.create(:subscription, state: :active) }
 
     it "cancels the subscription" do
       expect {
         subscription.cancel!
       }.to change {
         subscription.state
-      }.from(nil).to('cancelled')
+      }.from('active').to('cancelled')
     end
   end
 
@@ -137,7 +137,7 @@ describe Spree::Subscription do
         subscription.pause
       }.to change {
         subscription.state
-      }.from(nil).to('paused')
+      }.from('active').to('paused')
     end
   end
 
@@ -195,6 +195,24 @@ describe Spree::Subscription do
       subscriptions_attr.each { |attributes| subscriptions << FactoryGirl.create(:subscription, attributes) }
       subscriptions.each(&:save!)
       subscriptions
+    end
+  end
+
+  context '#create_next_order!' do
+    let(:second_store) { create(:store) }
+
+    before do
+      create_completed_subscription_order
+
+      subscription.last_order.update_column(:currency, 'CAD')
+      subscription.last_order.update_column(:store_id, second_store.id)
+    end
+
+    it "has the last order's currency and store" do
+      subscription.create_next_order!
+
+      expect(subscription.last_order.currency).to eq 'CAD'
+      expect(subscription.last_order.store_id).to eq second_store.id
     end
   end
 

@@ -31,18 +31,18 @@ module Spree
 
     context "skipping" do
       it "should skip next order" do
-        expect(@subscription.next_shipment_date.to_date).to eql 4.weeks.from_now.to_date
+        expect(next_shipment_date).to eql original_shipment_date
 
         api_get :skip_next_order, id: @subscription.id
-        expect(@subscription.next_shipment_date.to_date).to eql 8.weeks.from_now.to_date
+        expect(next_shipment_date).to eql next_calc_shipment_date
       end
 
       it "should be able to undo a skip next order" do
         @subscription.skip_next_order
-        expect(@subscription.next_shipment_date.to_date).to eql 8.weeks.from_now.to_date
+        expect(next_shipment_date).to eql next_calc_shipment_date
 
         api_get :undo_skip_next_order, id: @subscription.id
-        expect(@subscription.next_shipment_date.to_date).to eql 4.weeks.from_now.to_date
+        expect(next_shipment_date).to eql original_shipment_date
       end
     end
 

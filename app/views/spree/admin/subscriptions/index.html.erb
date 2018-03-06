@@ -1,10 +1,5 @@
 <% content_for :page_title do %>
-  <%= t(:listing_subscriptions) %>
-<% end %>
-
-<% content_for :page_actions do %>
-  <li><%= button_link_to('Failed Renewals', failures_admin_subscriptions_path) %></li>
-  <li><%= button_link_to('Adjust SKUs', adjust_sku_admin_subscriptions_path) %></li>
+  <%= Spree.t(:subscriptions) %>
 <% end %>
 
 <% content_for :table_filter_title do %>
@@ -57,6 +52,13 @@
         </div>
       </div>
 
+      <div class="four columns omega">
+        <div class="field">
+          <%= label_tag :q_state_eq, Spree.t(:status) %>
+          <%= f.select :state_eq, Spree::Subscription.state_machines[:state].states.collect {|s| [Spree.t("subscription_state.#{s.name}"), s.value]}, {:include_blank => true}, :class => 'select2' %>
+        </div>
+      </div>      
+
       <div class="clearfix"></div>
 
       <div class="actions filter-actions">
@@ -80,18 +82,20 @@
        <col style="width: 18%;">
        <col style="width: 15%;">
        <col style="width: 3%;">
-       <col style="width: 9%;">
+       <col style="width: 6%;">
+       <col style="width: 3%;">
        <col style="width: 9%;">
     </colgroup>
     <thead>
       <tr data-hook="admin_subscriptions_index_headers">
         <th>ID</th>
-        <th>State</th>
+        <th>Status</th>
         <th>Frequency</th>
         <th>Last Order</th>
         <th>User</th>
         <th>Skip</th>
         <th>Renew Date</th>
+        <th>Cur</th>
         <th data-hook="admin_subscriptions_index_header_actions" class="actions"></th>
       </tr>
     </thead>
@@ -108,19 +112,22 @@
           <% end %>
         </td>
         <td>
-          <span class="state <%= subscription.orders.first.state.downcase %>">
-            <%= link_to subscription.orders.first.number, edit_admin_order_path(subscription.last_order), target: '_blank' %>
+          <% if subscription.orders.any? %>
+          <span class="state <%= subscription.last_order.state.downcase %>">
+            <%= link_to subscription.last_order.number, edit_admin_order_path(subscription.last_order), target: '_blank' %>
           </span>
           <br />
           <%= l(subscription.last_order_date, format: :long)  %>
           <br />
           <%= subscription.shipping_method.name if subscription.shipment && subscription.shipment.shipping_method %>
+          <% end %>
         </td>
         <td class="align-center">
           <%= link_to(subscription.user.email, edit_admin_user_path(subscription.user), target: '_blank') if subscription.user %>
         </td>
         <td class="align-center"><%= subscription.skip_order_at ? 'Yes' : '' if subscription.can_renew? %></td>
         <td class="align-center"><%= l(subscription.next_shipment_date, format: :subscription_date_format) if subscription.can_renew? %></td>
+        <td class="align-center center-flags <%= subscription.last_order.currency.downcase %>"></td>
         <td class='actions align-center' data-hook="admin_subscriptions_index_row_actions">
           <%=
             link_to_with_icon 'edit', 'Edit', edit_admin_subscription_path(subscription), no_text: true
@@ -138,7 +145,7 @@
   </table>
 <% else %>
   <div class="no-objects-found">
-    <%= t(:no_subscriptions_found)%>
+    <%= Spree.t(:'admin.subscription.no_subscriptions_found') %>
   </div>
 <% end %>
 
